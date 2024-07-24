@@ -1,11 +1,17 @@
 <?php
 require_once('./partials/connection.php');
+$id = htmlspecialchars($_GET['id']);
 
+$sql = "SELECT * FROM `players` WHERE `id` = $id LIMIT 1";
+$result = $connection->query($sql);
+$player = $result->fetch_assoc();
 // echo "<pre>";
-// print_r($connection);
+// print_r($player);
 // echo "</pre>";
 
-$name = $strong_foot = $position = "";
+$name = $player['name'];
+$strong_foot = $player['strong_foot'];
+$position = $player['position'];
 $errors = [];
 if (isset($_POST['submit'])) {
 
@@ -26,11 +32,10 @@ if (isset($_POST['submit'])) {
     }
 
     if (count($errors) === 0) {
-        $sql = "INSERT INTO `players`(`name`, `strong_foot`, `position`) VALUES ('$name', '$strong_foot', '$position')";
+        $sql = "UPDATE `players` SET `name` = '$name', `strong_foot` = '$strong_foot', `position` = '$position' WHERE `id` = $id";
 
         if ($connection->query($sql)) {
             $success = "Magic has been spelled!";
-            $name = $strong_foot = $position = "";
         } else {
             $failure = "Magic has failed to spell!";
         }
@@ -43,7 +48,7 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Add Player</title>
+    <title>Edit Player</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
@@ -55,7 +60,7 @@ if (isset($_POST['submit'])) {
                     <div class="card-header">
                         <div class="row">
                             <div class="col-6">
-                                <h2 class="m-0">Add Player</h2>
+                                <h2 class="m-0">Edit Player</h2>
                             </div>
                             <div class="col-6 text-end">
                                 <a href="./" class="btn btn-outline-primary">Back</a>
@@ -81,7 +86,7 @@ if (isset($_POST['submit'])) {
                         }
                         ?>
 
-                        <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">
+                        <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>?id=<?php echo $id ?>" method="post">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" id="name" name="name" placeholder="Player name!" class="form-control <?php if (isset($errors['name'])) echo 'is-invalid' ?>" value="<?php echo $name ?>">
@@ -122,7 +127,7 @@ if (isset($_POST['submit'])) {
                             </div>
 
                             <div>
-                                <input type="submit" name="submit" value="Add" class="btn btn-primary">
+                                <input type="submit" name="submit" value="Update" class="btn btn-primary">
                             </div>
                         </form>
                     </div>

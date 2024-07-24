@@ -1,3 +1,12 @@
+<?php
+require_once('./partials/connection.php');
+$sql = "SELECT * FROM `players`";
+$result = $connection->query($sql);
+$players = $result->fetch_all(MYSQLI_ASSOC);
+// echo "<pre>";
+// print_r($players);
+// echo "</pre>";
+?>
 <!doctype html>
 <html lang="en">
 
@@ -24,33 +33,44 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <table class="table table-bordered m-0">
-                            <thead>
-                                <tr>
-                                    <th>Sr. No.</th>
-                                    <th>Name</th>
-                                    <th>Strong Foot</th>
-                                    <th>Position</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
+                        <?php
+                        if ($result->num_rows !== 0) { ?>
+                            <table class="table table-bordered m-0">
+                                <thead>
+                                    <tr>
+                                        <th>Sr. No.</th>
+                                        <th>Name</th>
+                                        <th>Strong Foot</th>
+                                        <th>Position</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
 
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Messi</td>
-                                    <td>Left</td>
-                                    <td>Striker</td>
-                                    <td>
-                                        <a href="./edit-player.php?id=11" class="btn btn-primary">Edit</a>
-                                        <a href="./delete-player.php?id=11" class="btn btn-danger">Delete</a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-
-                        <div class="alert alert-info m-0">No record found!</div>
+                                <tbody>
+                                    <?php
+                                    $sr = 1;
+                                    foreach ($players as $player) { ?>
+                                        <tr>
+                                            <td><?php echo $sr++; ?></td>
+                                            <td><?php echo $player['name'] ?></td>
+                                            <td><?php echo $player['strong_foot'] ?></td>
+                                            <td><?php echo $player['position'] ?></td>
+                                            <td>
+                                                <a href="./edit-player.php?id=<?php echo $player['id'] ?>" class="btn btn-primary">Edit</a>
+                                                <a href="./delete-player.php?id=<?php echo $player['id'] ?>" class="btn btn-danger">Delete</a>
+                                            </td>
+                                        </tr>
+                                    <?php
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        <?php
+                        } else { ?>
+                            <div class="alert alert-info m-0">No record found!</div>
+                        <?php
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
